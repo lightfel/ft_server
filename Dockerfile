@@ -1,5 +1,7 @@
 FROM debian:buster
 
+ENV AUTOINDEX=on
+
 COPY ./srcs/start.sh ./
 COPY ./srcs/localhost.conf /tmp/
 COPY ./srcs/config.inc.php /tmp/
@@ -27,15 +29,15 @@ RUN wget -P /tmp/ https://files.phpmyadmin.net/phpMyAdmin/5.1.0/phpMyAdmin-5.1.0
     && unzip /tmp/phpMyAdmin-5.1.0-all-languages -d /var/www/html/ \
     && mv /var/www/html/phpMyAdmin-5.1.0-all-languages/ /var/www/html/phpmyadmin/ \
     && rm -rf /tmp/phpMyAdmin-5.1.0-all-languages.zip \
-    && mv /tmp/config.inc.php /var/www/html/phpmyadmin/ \
-    && chmod 775 -R /var/www/html/phpmyadmin/ \
-    && chown www-data:root -R /var/www/html/phpmyadmin/
+    && mv /tmp/config.inc.php /var/www/html/phpmyadmin/
 
 RUN wget -P /tmp/ https://wordpress.org/latest.tar.gz \
     && tar -zxvf /tmp/latest.tar.gz -C /var/www/html/ \
     && rm -rf /tmp/latest.tar.gz \
-    && mv /tmp/wp-config.php /var/www/html/wordpress/ \
-    && chmod 775 -R /var/www/html/wordpress/ \
-    && chown www-data:root -R /var/www/html/wordpress/
+    && mv /tmp/wp-config.php /var/www/html/wordpress/
+
+RUN chown www-data:www-data -R /var/www/html/* \
+    && find /var/www/html/ -type d -exec chmod 755 {} + \
+    && find /var/www/html/ -type f -exec chmod 644 {} +
 
 CMD bash ./start.sh
